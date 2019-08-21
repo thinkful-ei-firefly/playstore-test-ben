@@ -41,7 +41,10 @@ describe('GET /apps', () => {
     return supertest(app)
       .get('/apps')
       .query({ genres: 'MISTAKE' })
-      .expect(400, 'Genres must be one of Action, Puzzle, Strategy, Casual, Arcade, Card');
+      .expect(
+        400,
+        'Genres must be one of Action, Puzzle, Strategy, Casual, Arcade, Card'
+      );
   });
 
   it('should sort by Rating', () => {
@@ -62,23 +65,21 @@ describe('GET /apps', () => {
       });
   });
 
-  it('should filter by genre', () => {
+  it('should filter by Arcade', () => {
     return supertest(app)
       .get('/apps')
-      .query({genres : 'Arcade' })
+      .query({ genres: 'Arcade' })
       .expect(200)
       .expect('Content-Type', /json/)
       .then(res => {
         expect(res.body).to.be.an('array');
-        let filterWorking = true;
-        for (let i = 0; i < res.body.length; i++) {
-          if (!(res.body[i].Genres.includes('Arcade'))) {
-            filterWorking = false;
-            i = res.body.length;
-          }
+        let i = 0;
+        let filtered = true;
+        while (filtered && i < res.body.length - 1) {
+          filtered = filtered && res.body[i].Genres.includes('Arcade');
+          i++;
         }
-        expect(filterWorking).to.be.true;
+        expect(filtered).to.be.true;
       });
   });
-
 });
